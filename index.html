@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Chocolate Rate</title>
+<meta name="description" content="A classroom game on time value of money: the discount rate is our mood about the future, turned into a number.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    --bg:#1B120E;
+    --panel:#261A14;
+    --panel-2:#31221A;
+    --line:#4A3528;
+    --text:#F6EBDD;
+    --dim:#C9B39C;
+    --faint:#8F7A66;
+    --gold:#E9B949;
+    --gold-deep:#B8862B;
+    --mint:#7DD3B0;
+    --blue:#86B6EC;
+    --coral:#F07E62;
+    --display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+    --body:'Atkinson Hyperlegible', 'Segoe UI', system-ui, sans-serif;
+    --mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:
+      radial-gradient(1200px 500px at 85% -10%, rgba(233,185,73,.10), transparent 60%),
+      radial-gradient(900px 400px at -10% 30%, rgba(125,211,176,.06), transparent 60%),
+      var(--bg);
+    background-color:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.55;
+    padding-inline:20px;
+    padding-block:max(28px, env(safe-area-inset-top)) 64px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin-inline:auto;}
+  a{color:var(--gold);}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px;}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:28px;
+    align-items:center;
+    padding-block:20px 36px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:32px;
+  }
+  .kicker{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(44px, 8vw, 92px);
+    line-height:.92;
+    letter-spacing:-.03em;
+    margin:12px 0 18px;
+    text-wrap:balance;
+  }
+  h1 .foil{
+    background:linear-gradient(100deg, #F7D77D 0%, #E9B949 35%, #B8862B 60%, #F3CF6B 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .lede{font-size:clamp(17px,2vw,20px);color:var(--dim);max-width:58ch;margin:0;}
+  .lede strong{color:var(--text);}
+  .hero-coin{
+    width:clamp(110px, 16vw, 180px);
+    aspect-ratio:1;
+    max-width:100%;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255,245,200,.85), transparent 28%),
+      conic-gradient(from 200deg, #B8862B, #F3CF6B, #C9962F, #F7D77D, #A97A22, #E9B949, #B8862B);
+    box-shadow: inset 0 0 0 7px rgba(120,80,20,.45), inset 0 0 0 9px rgba(255,230,160,.35), 0 18px 40px -12px rgba(0,0,0,.7);
+    display:grid;
+    place-items:center;
+    font-family:var(--display);
+    font-weight:800;
+    font-size:clamp(34px,5vw,58px);
+    color:#6B4510;
+    text-shadow:0 1px 0 rgba(255,235,170,.6);
+    transform:rotate(-8deg);
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .hero-coin{animation:wobble 6s ease-in-out infinite;}
+    @keyframes wobble{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(6deg) translateY(-4px)}}
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 300px;
+    gap:28px;
+    align-items:start;
+  }
+  main{display:flex;flex-direction:column;gap:26px;min-width:0;}
+
+  /* ---------- Thermometer ---------- */
+  aside.thermo{
+    position:sticky;
+    top:max(16px, env(safe-area-inset-top));
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:22px 20px;
+  }
+  .thermo h3{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--dim);
+    margin:0 0 4px;
+    font-weight:700;
+  }
+  .rate-big{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:64px;
+    line-height:1;
+    letter-spacing:-.03em;
+    font-variant-numeric:tabular-nums;
+  }
+  .rate-big small{font-size:28px;color:var(--dim);font-weight:700;}
+  .mood{
+    display:inline-flex;align-items:center;gap:8px;
+    margin:10px 0 18px;
+    font-weight:700;font-size:14px;
+    padding:5px 12px;border-radius:999px;
+    background:var(--panel-2);border:1px solid var(--line);
+  }
+  .mood .dot{width:9px;height:9px;border-radius:50%;background:var(--mint);}
+  .thermo-body{display:flex;gap:18px;align-items:stretch;}
+  .tube{
+    width:58px;
+    height:300px;
+    border-radius:29px;
+    background:var(--panel-2);
+    border:2px solid var(--line);
+    display:flex;
+    flex-direction:column-reverse;
+    overflow:hidden;
+    flex:none;
+    position:relative;
+  }
+  .layer{transition:flex-basis .45s cubic-bezier(.2,.8,.2,1);flex-shrink:0;}
+  .layer.imp{background:var(--gold);}
+  .layer.inf{background:var(--blue);}
+  .layer.risk{background:var(--coral);}
+  .scale-note{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:8px;}
+  .legend{display:flex;flex-direction:column;justify-content:flex-end;gap:12px;flex:1;min-width:0;}
+  .legend-row{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;font-size:14px;}
+  .legend-row .sw{width:12px;height:12px;border-radius:3px;}
+  .legend-row .lv{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;}
+  .legend-row .lbl small{display:block;color:var(--faint);font-size:12px;line-height:1.3;}
+  .eq{
+    margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);
+    font-family:var(--mono);font-size:12.5px;color:var(--dim);line-height:1.7;
+  }
+  .eq b{color:var(--text);}
+
+  /* ---------- Round cards ---------- */
+  section.round{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:28px 28px 30px;
+    scroll-margin-top:20px;
+  }
+  .round-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .tag{
+    font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;
+    padding:4px 11px;border-radius:999px;color:#1B120E;
+  }
+  .tag.gold{background:var(--gold);}
+  .tag.mint{background:var(--mint);}
+  .tag.coral{background:var(--coral);}
+  .tag.plain{background:var(--text);}
+  .layer-chip{font-family:var(--mono);font-size:12px;color:var(--dim);}
+  h2{
+    font-family:var(--display);font-weight:800;
+    font-size:clamp(28px,3.6vw,40px);
+    letter-spacing:-.02em;line-height:1.05;
+    margin:8px 0 10px;text-wrap:balance;
+  }
+  .say{
+    border-left:3px solid var(--gold);
+    padding:4px 0 4px 16px;
+    margin:14px 0 22px;
+    font-size:clamp(17px,1.9vw,20px);
+    color:var(--text);
+    max-width:60ch;
+  }
+    p.note{color:var(--dim);max-width:62ch;margin:0 0 14px;}
+  .reveal{margin-top:22px;}
+  [hidden]{display:none !important;}
+  .key{
+    margin-top:22px;
+    background:var(--panel-2);
+    border-radius:14px;
+    padding:14px 18px;
+    font-size:16px;
+  }
+  .key b{color:var(--gold);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px;}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .box{background:var(--panel-2);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0;}
+  .box h4{margin:0 0 12px;font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:700;}
+
+  /* controls */
+  .seg{display:flex;flex-wrap:wrap;gap:8px;}
+  .seg button, .btn{
+    font-family:var(--mono);font-weight:700;font-size:14px;
+    background:transparent;color:var(--text);
+    border:1.5px solid var(--line);border-radius:12px;
+    padding:9px 14px;cursor:pointer;
+    transition:background .15s, border-color .15s, color .15s, transform .1s;
+  }
+  .seg button:hover, .btn:hover{border-color:var(--gold);}
+  .seg button:active, .btn:active{transform:translateY(1px);}
+  .seg button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1B120E;}
+  .btn.primary{background:var(--gold);border-color:var(--gold);color:#1B120E;}
+  .btn.shock[aria-pressed="true"]{background:var(--coral);border-color:var(--coral);color:#1B120E;}
+  .btn.shock.inf[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);}
+
+  .slider-row{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;margin-top:14px;}
+  .slider-row label{font-weight:700;font-size:14px;}
+  .slider-row output{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums;}
+  .slider-row input{grid-column:1 / -1;}
+  input[type="range"]{width:100%;accent-color:var(--gold);height:28px;}
+  input[type="range"].blue{accent-color:var(--blue);}
+  input[type="range"].coral{accent-color:var(--coral);}
+  input[type="number"]{
+    font-family:var(--mono);font-size:15px;font-weight:700;
+    background:var(--bg);color:var(--text);
+    border:1.5px solid var(--line);border-radius:10px;
+    padding:7px 10px;width:100%;min-width:0;
+  }
+
+  .stat-big{font-family:var(--display);font-weight:800;font-size:clamp(38px,5vw,56px);line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+  .stat-sub{color:var(--dim);font-size:14px;margin-top:6px;}
+
+  /* coins */
+  .coins{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:6px 0 4px;}
+  .coin-stack{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+  .coin{
+    width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #FFF1BE 0 12%, transparent 30%), conic-gradient(#B8862B,#F3CF6B,#C9962F,#F7D77D,#B8862B);
+    box-shadow:inset 0 0 0 3px rgba(120,80,20,.45);
+    flex:none;
+  }
+  .coin.half{clip-path:inset(0 50% 0 0);}
+  .vs{font-family:var(--mono);color:var(--faint);font-size:13px;}
+  .coin-label{font-size:13px;color:var(--dim);width:100%;}
+
+  /* seats */
+  .hall{
+    display:grid;
+    grid-template-columns:repeat(20, 1fr);
+    gap:5px;
+    padding:16px;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:16px;
+  }
+  .seat{
+    aspect-ratio:1;
+    max-width:100%;
+    border-radius:50%;
+    background:var(--line);
+    transition:background .25s, transform .25s, box-shadow .25s;
+  }
+  .seat.on{background:var(--gold);transform:scale(1.12);box-shadow:0 0 10px rgba(233,185,73,.55);}
+  .seat.simple-on{background:var(--mint);transform:scale(1.12);box-shadow:0 0 10px rgba(125,211,176,.5);}
+  .stage-label{text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--faint);margin-top:8px;}
+  .wave-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:16px 0 0;}
+  .counts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+  .count{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+  .count .n{font-family:var(--display);font-weight:800;font-size:34px;line-height:1;font-variant-numeric:tabular-nums;}
+  .count .t{font-size:13px;color:var(--dim);margin-top:4px;}
+  .count.gold .n{color:var(--gold);}
+  .count.mint .n{color:var(--mint);}
+
+  /* bars */
+  .bars{display:flex;flex-direction:column;gap:10px;margin-top:8px;}
+  .bar-row{display:grid;grid-template-columns:96px 1fr 76px;gap:10px;align-items:center;font-size:14px;}
+  .bar-row .bl{color:var(--dim);font-family:var(--mono);font-size:13px;}
+  .bar-track{height:22px;background:var(--bg);border-radius:6px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--faint);border-radius:6px;transition:width .4s cubic-bezier(.2,.8,.2,1);}
+  .bar-row.class .bar-fill{background:var(--gold);}
+  .bar-row.class .bl{color:var(--gold);font-weight:700;}
+  .bar-row .bv{font-family:var(--mono);font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
+
+  /* promise */
+  .promise{
+    display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch;
+  }
+  .ticket{
+    background:repeating-linear-gradient(135deg, rgba(125,211,176,.06) 0 10px, transparent 10px 20px), var(--panel-2);
+    border:1.5px dashed var(--mint);
+    border-radius:16px;
+    padding:18px;
+  }
+  .ticket .t-head{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);}
+  .ticket .t-body{font-family:var(--display);font-weight:700;font-size:24px;margin:8px 0 12px;line-height:1.15;}
+  .inline-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .inline-inputs label{font-size:12px;color:var(--dim);display:flex;flex-direction:column;gap:4px;font-weight:700;}
+  .shocks{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+  .restore{margin-top:12px;font-size:15px;color:var(--dim);}
+  .restore b{color:var(--text);font-family:var(--mono);}
+
+  /* debrief */
+  .uses{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px;}
+  .use{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .use .u-t{font-family:var(--display);font-weight:700;font-size:18px;}
+  .use .u-f{font-family:var(--mono);font-size:12px;color:var(--gold);margin-top:8px;overflow-x:auto;white-space:nowrap;}
+  .use .u-d{font-size:13px;color:var(--dim);margin-top:6px;}
+  .big-formula{
+    font-family:var(--mono);font-weight:700;
+    font-size:clamp(20px,3vw,30px);
+    text-align:center;
+    padding:22px 12px;margin-top:18px;
+    background:var(--bg);border:1px solid var(--line);border-radius:16px;
+    overflow-x:auto;
+  }
+  .big-formula .r{color:var(--gold);}
+
+  nav.jump{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px;}
+  nav.jump a{
+    font-family:var(--mono);font-size:13px;text-decoration:none;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;padding:6px 12px;
+  }
+  nav.jump a:hover{color:var(--text);border-color:var(--gold);}
+
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--faint);font-size:13px;}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 980px){
+    .layout{grid-template-columns:1fr;}
+    aside.thermo{position:sticky;top:0;z-index:5;border-radius:0 0 18px 18px;padding:12px 16px;margin-inline:-20px;border-top:none;}
+    .thermo-body{flex-direction:column;gap:10px;}
+    .tube{width:100%;height:22px;flex-direction:row;border-radius:11px;}
+    .thermo .head-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    .rate-big{font-size:40px;}
+    .rate-big small{font-size:20px;}
+    .mood{margin:0;}
+    .legend{flex-direction:row;flex-wrap:wrap;gap:6px 14px;}
+    .legend-row{grid-template-columns:10px auto auto;font-size:13px;}
+    .legend-row .lbl small{display:none;}
+    .scale-note,.eq{display:none;}
+    .uses{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width: 640px){
+    header.hero{grid-template-columns:1fr;}
+    .hero-coin{display:none;}
+    section.round{padding:22px 16px 24px;border-radius:18px;}
+    .two,.promise{grid-template-columns:1fr;}
+    .hall{gap:3px;padding:10px;}
+    .counts{grid-template-columns:1fr 1fr 1fr;gap:8px;}
+    .count .n{font-size:26px;}
+    .bar-row{grid-template-columns:72px 1fr 64px;}
+    .uses{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div>
+      <div class="kicker">Corporate Finance &middot; Lecture 1 &middot; Time Value of Money</div>
+      <h1>The <span class="foil">Chocolate</span> Rate</h1>
+      <p class="lede">One chocolate coin, one banknote, 300 people. Three quick rounds show that <strong>the discount rate is our mood about the future, turned into a number</strong>. It's the same <em>r</em> you'll use all semester.</p>
+      <nav class="jump" aria-label="Rounds">
+        <a href="#round1">1 &middot; Chocolate Test</a>
+        <a href="#round2">2 &middot; Stand-Up Wave</a>
+        <a href="#round3">3 &middot; The IOU</a>
+        <a href="#debrief">Debrief</a>
+      </nav>
+    </div>
+    <div class="hero-coin" aria-hidden="true">r</div>
+  </header>
+
+  <div class="layout">
+    <main>
+
+      <!-- ROUND 1 -->
+      <section class="round" id="round1">
+        <div class="round-top">
+          <span class="tag gold">ROUND 1</span>
+          <span class="layer-chip">Impatience</span>
+        </div>
+        <h2>The Chocolate Test</h2>
+        <p class="say">Eat your chocolate now&hellip; or keep it unopened until the end of class and get more?</p>
+
+        <div class="two">
+          <div class="box">
+            <h4>How many coins would make you wait?</h4>
+            <div class="seg" id="r1-offers" role="group" aria-label="Coins promised for waiting">
+              <button type="button" data-v="1.5">1&frac12; coins</button>
+              <button type="button" data-v="2" aria-pressed="true">2 coins</button>
+              <button type="button" data-v="3">3 coins</button>
+              <button type="button" data-v="4">4 coins</button>
+              <button type="button" data-v="5">5 coins</button>
+            </div>
+            <div class="coins" style="margin-top:18px;">
+              <div class="coin-stack" aria-hidden="true"><span class="coin"></span></div>
+              <span class="vs">now &nbsp;vs&nbsp; later</span>
+              <div class="coin-stack" id="r1-later" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="box">
+            <h4>Interest our class demanded</h4>
+            <div class="stat-big" id="r1-rate">100%</div>
+            <div class="stat-sub">for waiting one lecture (about 75 minutes)</div>
+            <div class="stat-sub" id="r1-fun" style="margin-top:12px;"></div>
+          </div>
+        </div>
+
+        <div class="slider-row">
+          <label for="imp"><span style="color:var(--gold)">Impatience</span> for a one-year wait</label>
+          <output id="imp-out" for="imp">3.0%</output>
+          <input type="range" id="imp" min="0" max="10" step="0.5" value="3">
+        </div>
+        <p class="note" style="margin-top:6px;font-size:14px;">For chocolate over one lecture, the rate is huge. For money over a full year, investors usually ask only a few percent just for waiting.</p>
+
+        <button type="button" class="btn reveal">Reveal the takeaway</button><div class="key" hidden><b>Takeaway</b>The discount rate isn't a fact about the money. It's a fact about the people valuing it. The people who ate and the people who waited looked at the same chocolate and valued it differently.</div>
+      </section>
+
+      <!-- ROUND 2 -->
+      <section class="round" id="round2">
+        <div class="round-top">
+          <span class="tag mint">ROUND 2</span>
+          <span class="layer-chip">Compounding &amp; discounting</span>
+        </div>
+        <h2>The Stand-Up Wave</h2>
+        <p class="say">Each year, everyone standing brings one neighbor up. That&rsquo;s 100% interest.</p>
+
+        <div class="hall" id="hall" aria-label="300 seats in the lecture hall"></div>
+        <div class="stage-label">STAGE</div>
+
+        <div class="wave-controls">
+          <button type="button" class="btn primary" id="play">&#9654; Play the wave</button>
+          <div class="seg" id="mode" role="group" aria-label="Interest type">
+            <button type="button" data-m="compound" aria-pressed="true">Compound</button>
+            <button type="button" data-m="simple">Simple</button>
+          </div>
+        </div>
+        <div class="slider-row">
+          <label for="year">Year</label>
+          <output id="year-out" for="year">0</output>
+          <input type="range" id="year" min="0" max="8" step="1" value="0">
+        </div>
+
+        <div class="counts">
+          <div class="count gold"><div class="n" id="c-comp">1</div><div class="t">standing, compound</div></div>
+          <div class="count mint"><div class="n" id="c-simp">1</div><div class="t">standing, simple</div></div>
+          <div class="count"><div class="n" id="c-gap">0</div><div class="t">people from compounding</div></div>
+        </div>
+
+        <p class="say" style="margin-top:28px;">Now flip it: what is 100 notes in the future worth today?</p>
+        <div class="box">
+          <h4>100 notes received in <span id="n-out">10</span> years is worth today&hellip;</h4>
+          <div class="bars" id="pv-bars"></div>
+          <div class="slider-row">
+            <label for="nyears">Years until you get paid</label>
+            <output id="nyears-out" for="nyears">10 yrs</output>
+            <input type="range" id="nyears" min="1" max="30" step="1" value="10">
+          </div>
+        </div>
+
+        <button type="button" class="btn reveal">Reveal the takeaway</button><div class="key" hidden><b>Takeaway</b>Discounting is compounding run backwards. At 100%, 256 people in 8 years are worth one person today. The more impatient or pessimistic we are, the faster the future shrinks.</div>
+      </section>
+
+      <!-- ROUND 3 -->
+      <section class="round" id="round3">
+        <div class="round-top">
+          <span class="tag coral">ROUND 3</span>
+          <span class="layer-chip">Inflation &amp; risk</span>
+        </div>
+        <h2>The Professor's IOU</h2>
+        <p class="say">Would you give your banknote today for this promise?</p>
+
+        <div class="promise">
+          <div class="ticket">
+            <div class="t-head">I.O.U. &middot; signed, your professor</div>
+            <div class="t-body">I promise to pay <span id="p-amt-t">100</span> notes in <span id="p-yrs-t">5</span> years.</div>
+            <div class="inline-inputs">
+              <label for="p-amt">Notes promised<input type="number" id="p-amt" value="100" min="1" step="1"></label>
+              <label for="p-yrs">Years<input type="number" id="p-yrs" value="5" min="1" max="40" step="1"></label>
+            </div>
+          </div>
+          <div class="box">
+            <h4>Worth today at the class rate</h4>
+            <div class="stat-big" id="p-pv">68.06</div>
+            <div class="stat-sub">notes, discounted at <span id="p-r">8.0%</span></div>
+            <div class="restore" id="restore"></div>
+          </div>
+        </div>
+
+        <div class="shocks" role="group" aria-label="Breaking news">
+          <button type="button" class="btn shock inf" id="shock-inf" aria-pressed="false">&#9889; Breaking: chocolate prices doubled</button>
+          <button type="button" class="btn shock" id="shock-risk" aria-pressed="false">&#9889; Breaking: professor may leave next week</button>
+        </div>
+
+        <div class="two" style="margin-top:6px;">
+          <div class="slider-row" style="margin-top:8px;">
+            <label for="inf">Inflation layer</label>
+            <output id="inf-out" for="inf">2.0%</output>
+            <input type="range" class="blue" id="inf" min="0" max="15" step="0.5" value="2">
+          </div>
+          <div class="slider-row" style="margin-top:8px;">
+            <label for="risk">Risk layer</label>
+            <output id="risk-out" for="risk">3.0%</output>
+            <input type="range" class="coral" id="risk" min="0" max="15" step="0.5" value="3">
+          </div>
+        </div>
+
+        <button type="button" class="btn reveal">Reveal the takeaway</button><div class="key" hidden><b>Takeaway</b>The promise didn't change. Our mood did. When people get nervous, the discount rate rises and every future payment is worth less today. That's why asset prices fall when markets panic.</div>
+      </section>
+
+      <!-- DEBRIEF -->
+      <section class="round" id="debrief">
+        <div class="round-top"><span class="tag plain">WRAP-UP</span></div>
+        <h2>Every <span style="color:var(--gold)">r</span> this semester is this thermometer</h2>
+        <p class="note">Investors' patience, their inflation expectations and their fear of risk all get packed into one number. That number shows up everywhere in the course.</p>
+        <div class="big-formula">PV = CF / (1 + <span class="r">r</span>)<sup>n</sup></div>
+        <div class="uses">
+          <div class="use"><div class="u-t">NPV</div><div class="u-f">&Sigma; CF<sub>t</sub> / (1+r)<sup>t</sup></div><div class="u-d">Should the firm take the project?</div></div>
+          <div class="use"><div class="u-t">Bonds</div><div class="u-f">coupons + face, at r</div><div class="u-d">Why bond prices fall when rates rise.</div></div>
+          <div class="use"><div class="u-t">Stocks</div><div class="u-f">D<sub>1</sub> / (r &minus; g)</div><div class="u-d">Valuing a company's future dividends.</div></div>
+          <div class="use"><div class="u-t">Cost of capital</div><div class="u-f">WACC</div><div class="u-d">The r a firm must beat.</div></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- THERMOMETER -->
+    <aside class="thermo" aria-label="Class discount rate">
+      <div class="head-row">
+        <h3>Class discount rate</h3>
+        <div class="rate-big" id="r-total">8.0<small>%</small></div>
+        <div class="mood" id="mood"><span class="dot" id="mood-dot"></span><span id="mood-label">Calm</span></div>
+      </div>
+      <div class="thermo-body">
+        <div class="tube" aria-hidden="true">
+          <div class="layer imp" id="l-imp"></div>
+          <div class="layer inf" id="l-inf"></div>
+          <div class="layer risk" id="l-risk"></div>
+        </div>
+        <div class="legend">
+          <div class="legend-row"><span class="sw" style="background:var(--coral)"></span><span class="lbl">Risk<small>Will I actually get paid?</small></span><span class="lv" id="v-risk">3.0%</span></div>
+          <div class="legend-row"><span class="sw" style="background:var(--blue)"></span><span class="lbl">Inflation<small>Will it buy less later?</small></span><span class="lv" id="v-inf">2.0%</span></div>
+          <div class="legend-row"><span class="sw" style="background:var(--gold)"></span><span class="lbl">Impatience<small>I'd rather have it now.</small></span><span class="lv" id="v-imp">3.0%</span></div>
+        </div>
+      </div>
+      <div class="scale-note">Tube full = 30%</div>
+      <div class="eq"><b>r</b> = impatience + inflation + risk</div>
+    </aside>
+  </div>
+
+  <footer>
+    Corporate Finance &middot; Time Value of Money. Try your own numbers: every value on this page updates as you change it.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function fmt(n, d){
+    if (!isFinite(n)) return '—';
+    return n.toLocaleString('en-US', {minimumFractionDigits:d, maximumFractionDigits:d});
+  }
+  function words(n){
+    var units = [[1e15,'quadrillion'],[1e12,'trillion'],[1e9,'billion'],[1e6,'million']];
+    for (var i=0;i<units.length;i++){
+      if (n >= units[i][0]) return fmt(n/units[i][0], 1) + ' ' + units[i][1];
+    }
+    return fmt(Math.round(n), 0);
+  }
+
+  /* ---------- Shared rate state ---------- */
+  var SHOCK_INF = 5, SHOCK_RISK = 7;
+  var state = { imp:3, inf:2, risk:3, shockInf:false, shockRisk:false };
+
+  function layers(){
+    return {
+      imp: state.imp,
+      inf: state.inf + (state.shockInf ? SHOCK_INF : 0),
+      risk: state.risk + (state.shockRisk ? SHOCK_RISK : 0)
+    };
+  }
+  function totalRate(){ var l = layers(); return l.imp + l.inf + l.risk; }
+  function baseRate(){ return state.imp + state.inf + state.risk; }
+
+  function moodFor(r){
+    if (r < 8.5) return ['Calm', 'var(--mint)'];
+    if (r < 13) return ['Uneasy', 'var(--gold)'];
+    if (r < 19) return ['Nervous', '#F4A259'];
+    return ['Panic', 'var(--coral)'];
+  }
+
+  function renderThermo(){
+    var l = layers(), r = totalRate(), cap = 30;
+    $('r-total').innerHTML = fmt(r,1) + '<small>%</small>';
+    $('v-imp').textContent = fmt(l.imp,1) + '%';
+    $('v-inf').textContent = fmt(l.inf,1) + '%' + (state.shockInf ? ' ⚡' : '');
+    $('v-risk').textContent = fmt(l.risk,1) + '%' + (state.shockRisk ? ' ⚡' : '');
+    $('l-imp').style.flexBasis = Math.min(100, l.imp / cap * 100) + '%';
+    $('l-inf').style.flexBasis = Math.min(100, l.inf / cap * 100) + '%';
+    $('l-risk').style.flexBasis = Math.min(100, l.risk / cap * 100) + '%';
+    var m = moodFor(r);
+    $('mood-label').textContent = m[0];
+    $('mood-dot').style.background = m[1];
+  }
+
+  function renderAll(){ renderThermo(); renderPV(); renderPromise(); }
+
+  /* ---------- Round 1 ---------- */
+  var offer = 2;
+  function renderRound1(){
+    var rate = (offer - 1) * 100;
+    $('r1-rate').textContent = fmt(rate, 0) + '%';
+    var term = Math.pow(offer, 24);
+    $('r1-fun').innerHTML = 'Keep that rate for all 24 lectures this term and 1 coin grows to <b style="color:var(--gold)">' + words(term) + '</b> coins.';
+    var stack = $('r1-later'); stack.innerHTML = '';
+    var whole = Math.floor(offer), half = offer - whole >= 0.5;
+    for (var i=0;i<whole;i++){ var c = document.createElement('span'); c.className = 'coin'; stack.appendChild(c); }
+    if (half){ var h = document.createElement('span'); h.className = 'coin half'; stack.appendChild(h); }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('#r1-offers button'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('#r1-offers button'), function(x){ x.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      offer = parseFloat(b.getAttribute('data-v'));
+      renderRound1();
+    });
+  });
+  $('imp').addEventListener('input', function(e){
+    state.imp = parseFloat(e.target.value);
+    $('imp-out').textContent = fmt(state.imp,1) + '%';
+    renderAll();
+  });
+
+  /* ---------- Round 2: hall ---------- */
+  var COLS = 20, ROWS = 15, SEATS = COLS * ROWS;
+  var hall = $('hall'), seats = [];
+  for (var s=0; s<SEATS; s++){
+    var d = document.createElement('div'); d.className = 'seat'; hall.appendChild(d); seats.push(d);
+  }
+  // Order seats so the wave spreads out from one student near the middle-front
+  var cx = 9.5, cy = 10;
+  var order = seats.map(function(_, i){ return i; }).sort(function(a, b){
+    var ax = a % COLS - cx, ay = Math.floor(a / COLS) - cy;
+    var bx = b % COLS - cx, by = Math.floor(b / COLS) - cy;
+    return (ax*ax + ay*ay) - (bx*bx + by*by);
+  });
+
+  var mode = 'compound', year = 0, timer = null;
+  function renderHall(){
+    var comp = Math.min(SEATS, Math.pow(2, year));
+    var simp = 1 + year;
+    var lit = mode === 'compound' ? comp : simp;
+    var cls = mode === 'compound' ? 'on' : 'simple-on';
+    for (var i=0; i<SEATS; i++){
+      var el = seats[order[i]];
+      el.className = 'seat' + (i < lit ? ' ' + cls : '');
+    }
+    $('year-out').textContent = year;
+    $('year').value = year;
+    $('c-comp').textContent = comp;
+    $('c-simp').textContent = simp;
+    $('c-gap').textContent = comp - simp;
+  }
+  $('year').addEventListener('input', function(e){ stopPlay(); year = parseInt(e.target.value, 10); renderHall(); });
+  Array.prototype.forEach.call(document.querySelectorAll('#mode button'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('#mode button'), function(x){ x.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      mode = b.getAttribute('data-m');
+      renderHall();
+    });
+  });
+  function stopPlay(){
+    if (timer){ clearInterval(timer); timer = null; }
+    $('play').innerHTML = '&#9654; Play the wave';
+  }
+  $('play').addEventListener('click', function(){
+    if (timer){ stopPlay(); return; }
+    if (year >= 8) year = 0;
+    renderHall();
+    $('play').innerHTML = '&#10074;&#10074; Pause';
+    var step = reduceMotion ? 250 : 900;
+    timer = setInterval(function(){
+      if (year >= 8){ stopPlay(); return; }
+      year++; renderHall();
+      if (year >= 8) stopPlay();
+    }, step);
+  });
+
+  /* ---------- Round 2: PV bars ---------- */
+  function renderPV(){
+    var n = parseInt($('nyears').value, 10);
+    $('n-out').textContent = n;
+    $('nyears-out').textContent = n + (n === 1 ? ' yr' : ' yrs');
+    var r = totalRate();
+    var rows = [
+      {label:'5%', rate:5, cls:''},
+      {label:'10%', rate:10, cls:''},
+      {label:'20%', rate:20, cls:''},
+      {label:'Class ' + fmt(r,1) + '%', rate:r, cls:'class'}
+    ];
+    var wrap = $('pv-bars'); wrap.innerHTML = '';
+    rows.forEach(function(row){
+      var pv = 100 / Math.pow(1 + row.rate/100, n);
+      var el = document.createElement('div');
+      el.className = 'bar-row ' + row.cls;
+      el.innerHTML = '<span class="bl">' + row.label + '</span>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + Math.max(1, pv) + '%"></div></div>' +
+        '<span class="bv">' + fmt(pv, 1) + '</span>';
+      wrap.appendChild(el);
+    });
+  }
+  $('nyears').addEventListener('input', renderPV);
+
+  /* ---------- Round 3: promise ---------- */
+  function renderPromise(){
+    var amt = Math.max(0, parseFloat($('p-amt').value) || 0);
+    var yrs = Math.max(1, parseInt($('p-yrs').value, 10) || 1);
+    $('p-amt-t').textContent = fmt(amt, 0);
+    $('p-yrs-t').textContent = yrs;
+    var r = totalRate() / 100, r0 = baseRate() / 100;
+    var pv = amt / Math.pow(1 + r, yrs);
+    $('p-pv').textContent = fmt(pv, 2);
+    $('p-r').textContent = fmt(r*100, 1) + '%';
+    var shocked = state.shockInf || state.shockRisk;
+    if (shocked){
+      var pv0 = amt / Math.pow(1 + r0, yrs);
+      var need = pv0 * Math.pow(1 + r, yrs);
+      $('restore').innerHTML = 'Before the news it was worth <b>' + fmt(pv0, 2) + '</b>. To be worth that much again, the promise would need to be <b>' + fmt(need, 0) + '</b> notes instead of ' + fmt(amt, 0) + '.';
+    } else {
+      $('restore').textContent = 'What happens to this value when the news changes?';
+    }
+  }
+  ['p-amt','p-yrs'].forEach(function(id){ $(id).addEventListener('input', renderPromise); });
+  $('inf').addEventListener('input', function(e){
+    state.inf = parseFloat(e.target.value);
+    $('inf-out').textContent = fmt(state.inf,1) + '%';
+    renderAll();
+  });
+  $('risk').addEventListener('input', function(e){
+    state.risk = parseFloat(e.target.value);
+    $('risk-out').textContent = fmt(state.risk,1) + '%';
+    renderAll();
+  });
+  function toggleShock(btn, key){
+    btn.addEventListener('click', function(){
+      state[key] = !state[key];
+      btn.setAttribute('aria-pressed', state[key] ? 'true' : 'false');
+      renderAll();
+    });
+  }
+  toggleShock($('shock-inf'), 'shockInf');
+  toggleShock($('shock-risk'), 'shockRisk');
+
+  Array.prototype.forEach.call(document.querySelectorAll('.reveal'), function(b){
+    b.addEventListener('click', function(){ b.nextElementSibling.hidden = false; b.hidden = true; });
+  });
+
+  renderRound1();
+  renderHall();
+  renderAll();
+})();
+</script>
+</body>
+</html>
