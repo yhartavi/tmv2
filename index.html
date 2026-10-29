@@ -653,8 +653,8 @@
     $('r1-rate').textContent = fmt(rate, 0) + '%';
     var offerTxt = offer % 1 ? Math.floor(offer) + '\u00BD' : String(offer);
     $('r1-eq').innerHTML = offerTxt + ' coins later &divide; (1 + <span class="r">r</span>) = 1 coin now &rarr; <span class="r">r = ' + fmt(rate, 0) + '%</span>';
-    var term = Math.pow(offer, 24);
-    $('r1-fun').innerHTML = 'Keep that rate for all 24 lectures this term and 1 coin grows to <b style="color:var(--gold)">' + words(term) + '</b> coins.';
+    var term = Math.pow(offer, 10);
+    $('r1-fun').innerHTML = 'Keep that rate for all 10 lectures of the course and 1 coin grows to <b style="color:var(--gold)">' + words(term) + '</b> coins.';
     var stack = $('r1-later'); stack.innerHTML = '';
     var whole = Math.floor(offer), half = offer - whole >= 0.5;
     for (var i=0;i<whole;i++){ var c = document.createElement('span'); c.className = 'coin'; stack.appendChild(c); }
