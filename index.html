@@ -525,8 +525,8 @@
         </div>
 
         <div class="shocks" role="group" aria-label="Breaking news">
-          <button type="button" class="btn shock inf" id="shock-inf" aria-pressed="false">&#9889; Breaking: chocolate prices doubled</button>
-          <button type="button" class="btn shock" id="shock-risk" aria-pressed="false">&#9889; Breaking: professor may leave next week</button>
+          <button type="button" class="btn shock inf" id="shock-inf" aria-pressed="false">&#9889; Breaking: expected inflation rises 2% &rarr; 7% a year</button>
+          <button type="button" class="btn shock" id="shock-risk" aria-pressed="false">&#9889; Breaking: professor may leave, so the IOU may not be paid. Risk premium 3% &rarr; 10%</button>
         </div>
 
         <div class="two" style="margin-top:6px;">
@@ -644,7 +644,11 @@
     $('mood-dot').style.background = m[1];
   }
 
-  function renderAll(){ renderThermo(); renderPV(); renderPromise(); }
+  function renderShockLabels(){
+    $('shock-inf').innerHTML = '&#9889; Breaking: expected inflation rises ' + fmt(state.inf,1).replace('.0','') + '% → ' + fmt(state.inf + SHOCK_INF,1).replace('.0','') + '% a year';
+    $('shock-risk').innerHTML = '&#9889; Breaking: professor may leave, so the IOU may not be paid. Risk premium ' + fmt(state.risk,1).replace('.0','') + '% → ' + fmt(state.risk + SHOCK_RISK,1).replace('.0','') + '%';
+  }
+  function renderAll(){ renderShockLabels(); renderThermo(); renderPV(); renderPromise(); }
 
   /* ---------- Round 1 ---------- */
   var offer = 2;
