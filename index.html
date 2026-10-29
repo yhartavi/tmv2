@@ -165,6 +165,9 @@
   .layer.imp{background:var(--gold);}
   .layer.inf{background:var(--blue);}
   .layer.risk{background:var(--coral);}
+  .req-note{font-size:13px;color:var(--dim);line-height:1.4;margin:-8px 0 16px;}
+  .pv-eq{font-family:var(--mono);font-size:14px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:12px;}
+  .pv-eq .r{color:var(--gold);font-weight:700;}
   .scale-note{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:8px;}
   .legend{display:flex;flex-direction:column;justify-content:flex-end;gap:12px;flex:1;min-width:0;}
   .legend-row{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center;font-size:14px;}
@@ -362,6 +365,7 @@
     .rate-big{font-size:40px;}
     .rate-big small{font-size:20px;}
     .mood{margin:0;}
+    .req-note{margin:0;width:100%;font-size:12px;}
     .legend{flex-direction:row;flex-wrap:wrap;gap:6px 14px;}
     .legend-row{grid-template-columns:10px auto auto;font-size:13px;}
     .legend-row .lbl small{display:none;}
@@ -431,9 +435,10 @@
             </div>
           </div>
           <div class="box">
-            <h4>Interest our class demanded</h4>
+            <h4>Our discount rate</h4>
+            <div class="pv-eq" id="r1-eq"></div>
             <div class="stat-big" id="r1-rate">100%</div>
-            <div class="stat-sub">for waiting one lecture (about 75 minutes)</div>
+            <div class="stat-sub">per lecture (about 75 minutes). The return you required to wait is the rate you discount the future at.</div>
             <div class="stat-sub" id="r1-fun" style="margin-top:12px;"></div>
           </div>
         </div>
@@ -445,7 +450,7 @@
         </div>
         <p class="note" style="margin-top:6px;font-size:14px;">For chocolate over one lecture, the rate is huge. For money over a full year, investors usually ask only a few percent just for waiting.</p>
 
-        <button type="button" class="btn reveal">Reveal the takeaway</button><div class="key" hidden><b>Takeaway</b>The discount rate isn't a fact about the money. It's a fact about the people valuing it. The people who ate and the people who waited looked at the same chocolate and valued it differently.</div>
+        <button type="button" class="btn reveal">Reveal the takeaway</button><div class="key" hidden><b>Takeaway</b>The point where you switch from "eat now" to "wait" is your discount rate. It isn't a fact about the money. It's a fact about the people valuing it. The people who ate and the people who waited looked at the same chocolate and valued it differently.</div>
       </section>
 
       <!-- ROUND 2 -->
@@ -514,7 +519,7 @@
           <div class="box">
             <h4>Worth today at the class rate</h4>
             <div class="stat-big" id="p-pv">68.06</div>
-            <div class="stat-sub">notes, discounted at <span id="p-r">8.0%</span></div>
+            <div class="stat-sub">notes, discounted at the required return of <span id="p-r">8.0%</span></div>
             <div class="restore" id="restore"></div>
           </div>
         </div>
@@ -544,24 +549,25 @@
       <section class="round" id="debrief">
         <div class="round-top"><span class="tag plain">WRAP-UP</span></div>
         <h2>Every <span style="color:var(--gold)">r</span> this semester is this thermometer</h2>
-        <p class="note">Investors' patience, their inflation expectations and their fear of risk all get packed into one number. That number shows up everywhere in the course.</p>
+        <p class="note">Investors' patience, their inflation expectations and their fear of risk add up to one number: the return investors require. Discount future cash at that rate and you get what it's worth today. You'll use it everywhere in this course.</p>
         <div class="big-formula">PV = CF / (1 + <span class="r">r</span>)<sup>n</sup></div>
         <div class="uses">
           <div class="use"><div class="u-t">NPV</div><div class="u-f">&Sigma; CF<sub>t</sub> / (1+r)<sup>t</sup></div><div class="u-d">Should the firm take the project?</div></div>
           <div class="use"><div class="u-t">Bonds</div><div class="u-f">coupons + face, at r</div><div class="u-d">Why bond prices fall when rates rise.</div></div>
           <div class="use"><div class="u-t">Stocks</div><div class="u-f">D<sub>1</sub> / (r &minus; g)</div><div class="u-d">Valuing a company's future dividends.</div></div>
-          <div class="use"><div class="u-t">Cost of capital</div><div class="u-f">WACC</div><div class="u-d">The r a firm must beat.</div></div>
+          <div class="use"><div class="u-t">Cost of capital</div><div class="u-f">WACC</div><div class="u-d">The return a firm's investors require.</div></div>
         </div>
       </section>
 
     </main>
 
     <!-- THERMOMETER -->
-    <aside class="thermo" aria-label="Class discount rate">
+    <aside class="thermo" aria-label="Discount rate equals required return">
       <div class="head-row">
-        <h3>Class discount rate</h3>
+        <h3>Discount rate = required return</h3>
         <div class="rate-big" id="r-total">8.0<small>%</small></div>
         <div class="mood" id="mood"><span class="dot" id="mood-dot"></span><span id="mood-label">Calm</span></div>
+        <div class="req-note">What you'd expect to earn elsewhere at this level of risk.</div>
       </div>
       <div class="thermo-body">
         <div class="tube" aria-hidden="true">
@@ -570,13 +576,13 @@
           <div class="layer risk" id="l-risk"></div>
         </div>
         <div class="legend">
-          <div class="legend-row"><span class="sw" style="background:var(--coral)"></span><span class="lbl">Risk<small>Will I actually get paid?</small></span><span class="lv" id="v-risk">3.0%</span></div>
+          <div class="legend-row"><span class="sw" style="background:var(--coral)"></span><span class="lbl">Risk<small>Risk premium: will I actually get paid?</small></span><span class="lv" id="v-risk">3.0%</span></div>
           <div class="legend-row"><span class="sw" style="background:var(--blue)"></span><span class="lbl">Inflation<small>Will it buy less later?</small></span><span class="lv" id="v-inf">2.0%</span></div>
-          <div class="legend-row"><span class="sw" style="background:var(--gold)"></span><span class="lbl">Impatience<small>I'd rather have it now.</small></span><span class="lv" id="v-imp">3.0%</span></div>
+          <div class="legend-row"><span class="sw" style="background:var(--gold)"></span><span class="lbl">Impatience<small>Real risk-free rate: I'd rather have it now.</small></span><span class="lv" id="v-imp">3.0%</span></div>
         </div>
       </div>
       <div class="scale-note">Tube full = 30%</div>
-      <div class="eq"><b>r</b> = impatience + inflation + risk</div>
+      <div class="eq"><b>r</b> = impatience + inflation + risk<br>&nbsp;&nbsp;= real risk-free + inflation + risk premium<br>&nbsp;&nbsp;= <b>investors' required return</b></div>
     </aside>
   </div>
 
@@ -645,6 +651,8 @@
   function renderRound1(){
     var rate = (offer - 1) * 100;
     $('r1-rate').textContent = fmt(rate, 0) + '%';
+    var offerTxt = offer % 1 ? Math.floor(offer) + '\u00BD' : String(offer);
+    $('r1-eq').innerHTML = offerTxt + ' coins later &divide; (1 + <span class="r">r</span>) = 1 coin now &rarr; <span class="r">r = ' + fmt(rate, 0) + '%</span>';
     var term = Math.pow(offer, 24);
     $('r1-fun').innerHTML = 'Keep that rate for all 24 lectures this term and 1 coin grows to <b style="color:var(--gold)">' + words(term) + '</b> coins.';
     var stack = $('r1-later'); stack.innerHTML = '';
